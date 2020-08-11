@@ -129,6 +129,8 @@ class MotionPlanning(Drone):
             lon0 = float(line[3])
         
         # TODO: set home position to (lon0, lat0, 0)
+        if lat0 and lon0:
+            self.global_home = [lon0, lat0, 0]
 
         # TODO: retrieve current global position
  
