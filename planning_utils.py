@@ -161,7 +161,7 @@ def valid_actions(grid, current_node):
 
 def a_star(graph, h, start, goal):
     """Modified A* to work with NetworkX graphs."""
-
+    
     path = []
     path_cost = 0
     queue = PriorityQueue()
@@ -190,10 +190,10 @@ def a_star(graph, h, start, goal):
                 queue_cost = branch_cost + h(next_node, goal)
                 
                 if next_node not in visited:                
-                    visited.add(next_node)               
+                    visited.add(next_node)
                     branch[next_node] = (branch_cost, current_node)
                     queue.put((queue_cost, next_node))
-             
+                    
     if found:
         # retrace steps
         n = goal
@@ -209,7 +209,19 @@ def a_star(graph, h, start, goal):
         print('**********************') 
     return path[::-1], path_cost
 
-
+def closest_point(graph, current_point):
+    """
+    Compute the closest point in the `graph`
+    to the `current_point`.
+    """
+    closest_point = None
+    dist = 100000
+    for p in graph.nodes:
+        d = np.linalg.norm(np.array(p) - np.array(current_point))
+        if d < dist:
+            closest_point = p
+            dist = d
+    return closest_point
 
 def heuristic(position, goal_position):
     return np.linalg.norm(np.array(position) - np.array(goal_position))
@@ -234,5 +246,5 @@ def prune_path(path, grid):
                 pruned_path.remove(pruned_path[p1])
     else:
         pruned_path = path
-
+        
     return pruned_path
