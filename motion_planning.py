@@ -182,6 +182,11 @@ class MotionPlanning(Drone):
 
         # Run graph A* to find a path from start to goal
         print('Local Start and Goal: ', start_ne_g, goal_ne_g)
+        path, _ = a_star(G, heuristic, start_ne_g, goal_ne_g)
+
+        # prune path to minimize number of waypoints
+        pruned_path = prune_path(path, grid)
+        print("Path pruned from %d to %d" % (len(path), len(pruned_path)))
 
         # Run A* to find a path from start to goal
         # TODO: add diagonal motions with a cost of sqrt(2) to your A* implementation
