@@ -1,8 +1,8 @@
 from enum import Enum
 from queue import PriorityQueue
 import numpy as np
+from bresenham import bresenham
 from scipy.spatial import Voronoi
-
 
 def create_grid(data, drone_altitude, safety_distance):
     """
@@ -214,3 +214,25 @@ def a_star(graph, h, start, goal):
 def heuristic(position, goal_position):
     return np.linalg.norm(np.array(position) - np.array(goal_position))
 
+def prune_path(path, grid):
+    if path is not None:
+        pruned_path = [p for p in path]
+        p0 = 0
+        p1 = 1
+        while p1 < len(pruned_path)-1:
+            cells = bresenham(int(pruned_path[p0][0]), int(pruned_path[p0][1]),
+                            int(pruned_path[p1][0]), int(pruned_path[p1][1]))
+            collision = False
+            for c in cells:
+                if grid[c[0]][c[1]] == 1:
+                    collision = True
+                    break
+            if collision:
+                p0 = p1
+                p1 += 1
+            else:
+                pruned_path.remove(pruned_path[p1])
+    else:
+        pruned_path = path
+
+    return pruned_path
