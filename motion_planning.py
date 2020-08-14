@@ -163,9 +163,25 @@ class MotionPlanning(Drone):
         grid, edges, north_offset, east_offset = gae
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         print("Edges:", len(edges))
-        # Set goal as some arbitrary position on the grid
-        grid_goal = (-north_offset + 10, -east_offset + 10)
-        # TODO: adapt to set goal as latitude / longitude position and convert
+
+        # set start and goal local position using north and east offset
+        start_local = (start_north - north_offset, start_east - east_offset)
+        goal_local = (goal_north - north_offset, goal_east - east_offset)
+
+        # create the graph with the weight of the edges
+        # set to the Euclidean distance between the points
+        G = nx.Graph()
+        for e in edges:
+            p1 = e[0]
+            p2 = e[1]
+            dist = np.linalg.norm(np.array(p2) - np.array(p1))
+            G.add_edge(p1, p2, weight=dist)
+
+        start_ne_g = closest_point(G, start_local[:2])
+        goal_ne_g = closest_point(G, goal_local[:2])
+
+        # Run graph A* to find a path from start to goal
+        print('Local Start and Goal: ', start_ne_g, goal_ne_g)
 
         # Run A* to find a path from start to goal
         # TODO: add diagonal motions with a cost of sqrt(2) to your A* implementation
