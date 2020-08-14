@@ -152,13 +152,17 @@ class MotionPlanning(Drone):
         # Read in obstacle map
         data = np.loadtxt('colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
         
-        # Define a grid for a particular altitude and safety margin around obstacles
-        grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+        # Define a grid and Voronoi edges for a particular altitude and safety margin around obstacles
+        # Use pickle to load map if already exists for faster runtime
+        gae = None
+        if os.path.exists("./gridandedges.p"):
+            gae = pickle.load( open( "gridandedges.p", "rb" ) )
+        else:
+            gae = create_grid_and_edges(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+            pickle.dump( gae, open( "gridandedges.p", "wb" ) )
+        grid, edges, north_offset, east_offset = gae
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
-        # Define starting point on the grid (this is just grid center)
-        grid_start = (-north_offset, -east_offset)
-        # TODO: convert start position to current position rather than map center
-        
+        print("Edges:", len(edges))
         # Set goal as some arbitrary position on the grid
         grid_goal = (-north_offset + 10, -east_offset + 10)
         # TODO: adapt to set goal as latitude / longitude position and convert
