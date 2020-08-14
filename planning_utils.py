@@ -88,7 +88,8 @@ def valid_actions(grid, current_node):
     return valid_actions
 
 
-def a_star(grid, h, start, goal):
+def a_star(graph, h, start, goal):
+    """Modified A* to work with NetworkX graphs."""
 
     path = []
     path_cost = 0
@@ -112,16 +113,14 @@ def a_star(grid, h, start, goal):
             found = True
             break
         else:
-            for action in valid_actions(grid, current_node):
-                # get the tuple representation
-                da = action.delta
-                next_node = (current_node[0] + da[0], current_node[1] + da[1])
-                branch_cost = current_cost + action.cost
+            for next_node in graph[current_node]:
+                cost = graph.edges[current_node, next_node]['weight']
+                branch_cost = current_cost + cost
                 queue_cost = branch_cost + h(next_node, goal)
                 
                 if next_node not in visited:                
                     visited.add(next_node)               
-                    branch[next_node] = (branch_cost, current_node, action)
+                    branch[next_node] = (branch_cost, current_node)
                     queue.put((queue_cost, next_node))
              
     if found:
