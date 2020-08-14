@@ -123,25 +123,32 @@ class MotionPlanning(Drone):
 
         self.target_position[2] = TARGET_ALTITUDE
 
-        # TODO: read lat0, lon0 from colliders into floating point values
-        lat0 = None
-        lon0 = None
+        # read lat0, lon0 from colliders into floating point values
+        lat0 = 0
+        lon0 = 0
         with open('colliders.csv') as f:
             line = f.readline()
             line = line.replace(',','').strip().split()
             lat0 = float(line[1])
             lon0 = float(line[3])
         
-        # TODO: set home position to (lon0, lat0, 0)
-        if lat0 and lon0:
-            self.global_home = [lon0, lat0, 0]
+        # set home position to (lon0, lat0, 0)
+        self.global_home[0] = lon0  
+        self.global_home[1] = lat0
+        self.global_home[2] = 0
 
-        # TODO: retrieve current global position
- 
-        # TODO: convert to current local position using global_to_local()
+        # convert current global position to current local position using global_to_local()
+        start_north, start_east, _ = global_to_local(self.global_position, self.global_home)
+
+        # convert goal global position to local ne position
+        goal_lon = -122.400783
+        goal_lat = 37.795842
+        goal_global = [goal_lon, goal_lat, 0]
+        goal_north, goal_east, _ = global_to_local(goal_global, self.global_home)
         
         print('global home {0}, position {1}, local position {2}'.format(self.global_home, self.global_position,
                                                                          self.local_position))
+        
         # Read in obstacle map
         data = np.loadtxt('colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
         
