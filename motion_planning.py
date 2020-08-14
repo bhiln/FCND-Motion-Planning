@@ -188,13 +188,26 @@ class MotionPlanning(Drone):
         pruned_path = prune_path(path, grid)
         print("Path pruned from %d to %d" % (len(path), len(pruned_path)))
 
-        # Run A* to find a path from start to goal
-        # TODO: add diagonal motions with a cost of sqrt(2) to your A* implementation
-        # or move to a different search space such as a graph (not done here)
-        print('Local Start and Goal: ', grid_start, grid_goal)
-        path, _ = a_star(grid, heuristic, grid_start, grid_goal)
-        # TODO: prune path to minimize number of waypoints
-        # TODO (if you're feeling ambitious): Try a different approach altogether!
+        # show graph of map, edges, and pruned path
+        # plt.rcParams['figure.figsize'] = 10, 10
+        # plt.imshow(grid, origin='lower', cmap='Greys') 
+
+        # for e in edges:
+        #     p1 = e[0]
+        #     p2 = e[1]
+        #     plt.plot([p1[1], p2[1]], [p1[0], p2[0]], 'b-')
+
+        # for i in range(len(path)-1):
+        #     p1 = path[i]
+        #     p2 = path[i+1]
+        #     plt.plot([p1[1], p2[1]], [p1[0], p2[0]], 'r-')
+            
+        # plt.plot(start_local[1], start_local[0], 'rx')
+        # plt.plot(goal_local[1], goal_local[0], 'rx')
+
+        # plt.xlabel('EAST')
+        # plt.ylabel('NORTH')
+        # plt.show()
 
         # Convert path to waypoints
         waypoints = [[p[0] + north_offset, p[1] + east_offset, TARGET_ALTITUDE, 0] for p in path]
